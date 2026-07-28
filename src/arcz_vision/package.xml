@@ -1,16 +1,13 @@
 <?xml version="1.0"?>
 <package format="3">
-  <name>arcz_bringup</name>
+  <name>arcz_vision</name>
   <version>0.0.1</version>
-  <description>Top-level launch/config that brings up the whole arcz stack</description>
+  <description>ZR-10 camera: WebRTC video gateway and gimbal control web UI</description>
   <maintainer email="radek.domin@gmail.com">Radek</maintainer>
   <license>Apache-2.0</license>
 
   <exec_depend>launch</exec_depend>
-  <exec_depend>launch_ros</exec_depend>
-  <exec_depend>arcz_vision</exec_depend>
   <exec_depend>ament_index_python</exec_depend>
-  <exec_depend>arcz_connection</exec_depend>
 
   <export>
     <build_type>ament_python</build_type>

@@ -14,9 +14,16 @@ def generate_launch_description():
         )
     )
 
-    # observability and vision launches will be added here once those
-    # packages have nodes.
+    vision_launch = IncludeLaunchDescription(
+        PythonLaunchDescriptionSource(
+            os.path.join(get_package_share_directory('arcz_vision'),
+                         'launch', 'vision.launch.py')
+        )
+    )
+
+    # observability launch will be added here once that package has nodes.
 
     return LaunchDescription([
         connection_launch,
+        vision_launch,
     ])

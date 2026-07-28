@@ -1,0 +1,42 @@
+# MediaMTX v1.19.1 configuration for the SIYI ZR-10.
+# The camera is pulled continuously so a viewer never has to wait for RTSP startup.
+logLevel: info
+logDestinations: [stdout]
+readTimeout: 5s
+writeTimeout: 5s
+writeQueueSize: 1024
+udpMaxPayloadSize: 1200
+
+api: true
+apiAddress: 127.0.0.1:9997
+metrics: true
+metricsAddress: 127.0.0.1:9998
+playback: false
+
+rtsp: true
+rtspAddress: 127.0.0.1:8554
+rtspTransports: [tcp]
+rtmp: false
+hls: false
+srt: false
+moq: false
+
+webrtc: true
+# Signalling stays local and is exposed through the HTTPS web gateway.
+webrtcAddress: 127.0.0.1:8889
+webrtcAllowOrigins: ["*"]
+# Direct UDP is the lowest-latency path. TCP on the same port is a fallback.
+webrtcLocalUDPAddress: :8189
+webrtcLocalTCPAddress: :8189
+webrtcIPsFromInterfaces: false
+webrtcAdditionalHosts: [100.99.9.62, 10.42.0.1]
+webrtcHandshakeTimeout: 5s
+webrtcTrackGatherTimeout: 2s
+
+pathDefaults:
+  sourceOnDemand: false
+  rtspTransport: tcp
+
+paths:
+  camera:
+    source: rtsp://10.42.0.10:8554/main.264

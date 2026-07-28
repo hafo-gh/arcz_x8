@@ -1,12 +1,30 @@
-# ROS 2 Architecture
+# ARCZ - ROS 2
 
+## Namespace
 
+arcz
 
+## Packages
 
+| Package | Descirption |
+| --- | --- |
+| `arcz_connection` | | 
+| `arcz_observability` | | 
+| `arcz_vision` | | 
+| `arcz_navigation` | | 
 
+## Nodes
 
-
-
+| Package | Node | Description |
+| --- | --- | --- |
+| `arcz_connection` | `mavsplit` | | 
+| `arcz_connection` | `mavlink_bridge` | | 
+| `arcz_connection` | `foxglove_bridge` | | 
+| `arcz_connection` | `zenoh_router` | | 
+| `arcz_connection` | `internet_connection` | | 
+| `arcz_observability` | `mcap_recorder` | | 
+| `arcz_observability` | `postflight_dump` | | 
+| `arcz_vision` | `zr10_bridge` | | 
 
 
 
