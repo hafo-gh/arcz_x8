@@ -1,4 +1,4 @@
 mavlink_bridge:
   ros__parameters:
-    connection: "udpout:127.0.0.1:14552"
+    connection: "udpin:127.0.0.1:14552"
     mappings_file: "config/mavlink_mappings.yaml"

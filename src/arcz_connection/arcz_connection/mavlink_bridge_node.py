@@ -22,7 +22,7 @@ class MavlinkBridgeNode(Node):
 
     def __init__(self):
         super().__init__('mavlink_bridge')
-        self.declare_parameter('connection', 'udpout:127.0.0.1:14552')
+        self.declare_parameter('connection', 'udpin:127.0.0.1:14552')
         self.declare_parameter('mappings_file', '')
 
         connection = self.get_parameter('connection').value

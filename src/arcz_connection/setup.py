@@ -11,7 +11,6 @@ setup(
         ('share/' + package_name, ['package.xml']),
         ('share/' + package_name + '/launch', ['launch/connection.launch.py']),
         ('share/' + package_name + '/config', [
-            'config/mavsplit.yaml',
             'config/mavlink_bridge.yaml',
             'config/mavlink_mappings.yaml',
         ]),
@@ -24,7 +23,6 @@ setup(
     license='Apache-2.0',
     entry_points={
         'console_scripts': [
-            'mavsplit_node = arcz_connection.mavsplit_node:main',
             'mavlink_bridge_node = arcz_connection.mavlink_bridge_node:main',
             'internet_connection_node = arcz_connection.internet_connection_node:main',
         ],

@@ -2,14 +2,20 @@ import os
 
 from ament_index_python.packages import get_package_share_directory
 from launch import LaunchDescription
-from launch.actions import ExecuteProcess
+from launch.actions import DeclareLaunchArgument, ExecuteProcess
+from launch.substitutions import LaunchConfiguration
 from launch_ros.actions import Node
 
 
 def generate_launch_description():
     pkg_share = get_package_share_directory('arcz_connection')
 
-    # External packages: no custom node, just start them alongside ours.
+    serial_device = LaunchConfiguration('serial_device')
+    serial_baud = LaunchConfiguration('serial_baud')
+    qgc_out_uri = LaunchConfiguration('qgc_out_uri')
+    pth_out_uri = LaunchConfiguration('pth_out_uri')
+
+    # External tools: no custom node, just start them alongside ours.
     zenoh_router = ExecuteProcess(
         cmd=['ros2', 'run', 'rmw_zenoh_cpp', 'rmw_zenohd'],
         output='screen',
@@ -20,11 +26,17 @@ def generate_launch_description():
         output='screen',
     )
 
-    mavsplit_node = Node(
-        package='arcz_connection',
-        executable='mavsplit_node',
-        name='mavsplit',
-        parameters=[os.path.join(pkg_share, 'config', 'mavsplit.yaml')],
+    # mavsplit = MAVProxy fanning the FC serial link out to a UDP port for
+    # QGroundControl and a UDP port for mavlink_bridge. MAVProxy connects
+    # OUT to pth_out_uri, so mavlink_bridge must be listening there.
+    mavsplit = ExecuteProcess(
+        cmd=[
+            'mavproxy.py',
+            ['--master=', serial_device, ',', serial_baud],
+            ['--out=', qgc_out_uri],
+            ['--out=', pth_out_uri],
+            '--non-interactive',
+        ],
         output='screen',
     )
 
@@ -44,9 +56,13 @@ def generate_launch_description():
     )
 
     return LaunchDescription([
+        DeclareLaunchArgument('serial_device', default_value='/dev/ttyACM0'),
+        DeclareLaunchArgument('serial_baud', default_value='921600'),
+        DeclareLaunchArgument('qgc_out_uri', default_value='udpin:0.0.0.0:14551'),
+        DeclareLaunchArgument('pth_out_uri', default_value='udpout:127.0.0.1:14552'),
         zenoh_router,
         foxglove_bridge,
-        mavsplit_node,
+        mavsplit,
         mavlink_bridge_node,
         internet_connection_node,
     ])
