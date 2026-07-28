@@ -16,13 +16,20 @@ def generate_launch_description():
     pth_out_uri = LaunchConfiguration('pth_out_uri')
 
     # External tools: no custom node, just start them alongside ours.
+    # respawn=True: this container's only crash recovery below the whole
+    # process tree is ROS2 launch itself (Docker only restarts the whole
+    # container if launch's own PID 1 dies).
     zenoh_router = ExecuteProcess(
         cmd=['ros2', 'run', 'rmw_zenoh_cpp', 'rmw_zenohd'],
+        respawn=True,
+        respawn_delay=1.0,
         output='screen',
     )
 
     foxglove_bridge = ExecuteProcess(
         cmd=['ros2', 'launch', 'foxglove_bridge', 'foxglove_bridge_launch.xml', 'port:=8765'],
+        respawn=True,
+        respawn_delay=1.0,
         output='screen',
     )
 
@@ -37,6 +44,8 @@ def generate_launch_description():
             ['--out=', pth_out_uri],
             '--non-interactive',
         ],
+        respawn=True,
+        respawn_delay=1.0,
         output='screen',
     )
 
@@ -45,6 +54,8 @@ def generate_launch_description():
         executable='mavlink_bridge_node',
         name='mavlink_bridge',
         parameters=[os.path.join(pkg_share, 'config', 'mavlink_bridge.yaml')],
+        respawn=True,
+        respawn_delay=1.0,
         output='screen',
     )
 
@@ -52,6 +63,8 @@ def generate_launch_description():
         package='arcz_connection',
         executable='internet_connection_node',
         name='internet_connection',
+        respawn=True,
+        respawn_delay=1.0,
         output='screen',
     )
 

@@ -17,10 +17,15 @@ def generate_launch_description():
     bind_loopback = LaunchConfiguration('bind_loopback')
     bind_tailscale = LaunchConfiguration('bind_tailscale')
 
-    # MediaMTX is a vendored external binary (downloaded, not built here),
+    # MediaMTX is a vendored external binary (fetched at image build time),
     # same treatment as zenoh_router/foxglove_bridge in arcz_connection.
+    # respawn=True: this container's only crash recovery below the whole
+    # process tree is ROS2 launch itself (Docker only restarts the whole
+    # container if launch's own PID 1 dies).
     mediamtx = ExecuteProcess(
         cmd=[mediamtx_binary, mediamtx_config],
+        respawn=True,
+        respawn_delay=1.0,
         output='screen',
     )
 
@@ -35,16 +40,22 @@ def generate_launch_description():
             '--web-root', web_root,
             '--health-file', health_file,
         ],
+        respawn=True,
+        respawn_delay=1.0,
         output='screen',
     )
 
-    # zr10_healthcheck was a systemd oneshot run every 3s by a timer.
-    # Reproduced here as a simple loop since there is no ROS timer for
-    # external processes.
+    # zr10_healthcheck was a systemd oneshot run every 3s by a timer, and
+    # restarted stuck systemd services by name. Under Docker there is no
+    # such thing to restart from in here (a stuck process gets restarted
+    # by respawn=True above, a stuck container by Docker's own restart
+    # policy), so this loop now only reports health.json.
     zr10_healthcheck = ExecuteProcess(
         cmd=['bash', '-c', [
             'while true; do zr10_healthcheck --output ', health_file, '; sleep 3; done',
         ]],
+        respawn=True,
+        respawn_delay=1.0,
         output='screen',
     )
 

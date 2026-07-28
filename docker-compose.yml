@@ -1,0 +1,6 @@
+# Top-level convenience file: brings up every package's own compose project
+# at once. Each package under src/<package>/docker-compose.yml stays fully
+# self-contained and independently deployable; this just includes them.
+include:
+  - src/arcz_connection/docker-compose.yml
+  - src/arcz_vision/docker-compose.yml
