@@ -1,0 +1,8 @@
+# Each entry mirrors one mavlink message field into a ros2 topic.
+# bitmask (optional) is a MAV_MODE_FLAG_* / MAV_STATE_* name applied
+# to the field with bitwise AND before publishing as a Bool.
+mappings:
+  - mavlink_msg: HEARTBEAT
+    field: base_mode
+    bitmask: MAV_MODE_FLAG_SAFETY_ARMED
+    topic: /arcz/vehicle/is_armed

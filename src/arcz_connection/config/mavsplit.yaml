@@ -1,0 +1,7 @@
+mavsplit:
+  ros__parameters:
+    serial_port: "/dev/ttyTHS0"
+    serial_baud: 921600
+    udp_endpoints:
+      - "udpin:0.0.0.0:14551"
+      - "udpin:127.0.0.1:14552"
