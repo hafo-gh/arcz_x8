@@ -17,6 +17,10 @@ services:
       MALP_UPLOAD_TOKEN: ${MALP_UPLOAD_TOKEN:?Set MALP_UPLOAD_TOKEN in .env}
     volumes:
       - ${POSTFLIGHT_DATA_DIR:-./data}:/data
+      # arcz_observability's mcap_recorder output, for the mcap_recording
+      # collection source. Read-write: the uploader deletes the matched
+      # flight's recording here once its upload is confirmed.
+      - ${MCAP_LOGS_DIR:-../arcz_observability/mcap_logs}:/mcap_logs
       # Docker generates its own resolv.conf even under host networking,
       # replacing the host's systemd-resolved stub (127.0.0.53, which
       # understands Tailscale MagicDNS names like 'mrblack') with public

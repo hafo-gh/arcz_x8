@@ -63,6 +63,21 @@ collection:
       heartbeat_timeout_s: 15
       download_timeout_s: 600
 
+    # -------------------------------------------------------------------
+    # MCAP recording produced by arcz_observability's mcap_recorder for
+    # this same flight. Matched by arm time -- both mcap_recorder and this
+    # collector react to the same /arcz/vehicle/is_armed message on the
+    # same companion-computer clock, so (unlike the ULog match above) no
+    # flight-controller clock skew is involved; the tolerance here only
+    # needs to absorb ROS/Zenoh transport jitter between the two
+    # containers. The original recording is left in place until this
+    # flight's upload is confirmed, then removed.
+    # -------------------------------------------------------------------
+    - type: mcap_recording
+      output_name: mcap               # -> mcap/ directory in the archive
+      mcap_root: /mcap_logs           # matches arcz_observability's bind mount
+      match_tolerance_s: 15
+
 # --------------------------------------------------------------------------
 # Upload to server (server is developed separately)
 # --------------------------------------------------------------------------

@@ -76,8 +76,16 @@ def collect_command(spec, workdir, context, index):
 
 
 def run_sources(sources, workdir, context):
-    """Run every configured source in order. Returns total artifacts produced."""
+    """Run every configured source in order.
+
+    Returns ``(total_artifacts, cleanup_paths)``. ``cleanup_paths`` lists
+    original-location files/dirs (outside workdir) that sources copied from
+    and that should only be removed once the flight's zip is confirmed
+    uploaded -- currently just the mcap_recording source's original
+    mcap_logs directory.
+    """
     total = 0
+    cleanup_paths = []
     for index, spec in enumerate(sources or []):
         stype = spec.get('type')
         if stype == 'copy_paths':
@@ -87,6 +95,11 @@ def run_sources(sources, workdir, context):
         elif stype == 'px4_ulog':
             from arcz_postflight.postflight_dump.px4_ulog import collect_px4_ulog
             total += collect_px4_ulog(spec, workdir, context)
+        elif stype == 'mcap_recording':
+            from arcz_postflight.postflight_dump.mcap_recording import collect_mcap_recording
+            count, paths = collect_mcap_recording(spec, workdir, context)
+            total += count
+            cleanup_paths.extend(paths)
         else:
             raise CollectorError('unknown collection source type: %r' % stype)
-    return total
+    return total, cleanup_paths

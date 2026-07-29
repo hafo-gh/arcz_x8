@@ -6,8 +6,10 @@ default). Resume state -- the server-assigned upload URL and the confirmed
 byte offset -- is persisted per file, so an upload interrupted by power loss
 or a dropped link continues from where it stopped rather than restarting.
 """
+import json
 import os
 import random
+import shutil
 import threading
 import time
 
@@ -118,6 +120,7 @@ class UploaderNode(Node):
                     os.remove(zip_path)
                 except OSError:
                     pass
+            self._cleanup_originals(upload_id, task.get('cleanup_paths'))
             return True
         except UploadError as exc:
             self.get_logger().warning('Upload %d failed: %s' % (upload_id, exc))
@@ -129,6 +132,23 @@ class UploaderNode(Node):
                 'Upload %d unexpected error: %s' % (upload_id, exc))
             self.store.mark_upload_failed(upload_id, exc, self.max_attempts)
             return False
+
+    def _cleanup_originals(self, upload_id, cleanup_paths_json):
+        """Remove original-location sources (e.g. the raw mcap recording)
+        now that this flight's data is confirmed uploaded."""
+        try:
+            paths = json.loads(cleanup_paths_json or '[]')
+        except ValueError:
+            return
+        for path in paths:
+            try:
+                if os.path.isdir(path):
+                    shutil.rmtree(path)
+                elif os.path.exists(path):
+                    os.remove(path)
+            except OSError as exc:
+                self.get_logger().warning(
+                    'Upload %d: failed to clean up %s: %s' % (upload_id, path, exc))
 
     def _sleep(self, seconds):
         """Interruptible sleep that returns early on shutdown."""

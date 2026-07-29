@@ -150,13 +150,13 @@ class CollectorNode(Node):
             with open(os.path.join(flight_work, 'metadata.json'), 'w') as handle:
                 json.dump(context, handle, indent=2, sort_keys=True)
 
-            n = run_sources(self.sources, flight_work, context)
+            n, cleanup_paths = run_sources(self.sources, flight_work, context)
             self.get_logger().info(
                 'Flight %d: collected %d artifact group(s)' % (flight_id, n))
 
             zip_path = self._zip_flight(flight_id, flight_work, task)
             size = os.path.getsize(zip_path)
-            self.store.mark_collected(flight_id, zip_path, size)
+            self.store.mark_collected(flight_id, zip_path, size, cleanup_paths)
             shutil.rmtree(flight_work, ignore_errors=True)
             self.get_logger().info(
                 'Flight %d collected -> %s (%d bytes); queued for upload'

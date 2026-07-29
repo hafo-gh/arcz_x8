@@ -6,3 +6,4 @@ install/
 log/
 .env
 src/arcz_postflight/data/
+src/arcz_observability/mcap_logs/

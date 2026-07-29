@@ -13,6 +13,7 @@ guarded by a lock.
 """
 import fcntl
 import hashlib
+import json
 import os
 import sqlite3
 import threading
@@ -60,6 +61,7 @@ CREATE TABLE IF NOT EXISTS uploads (
     created_at  REAL NOT NULL,
     updated_at  REAL NOT NULL,
     error       TEXT,
+    cleanup_paths TEXT,
     FOREIGN KEY (flight_id) REFERENCES flights (id)
 );
 """
@@ -115,6 +117,8 @@ class Store:
             self._conn.execute('ALTER TABLE uploads ADD COLUMN flight_uuid TEXT')
         if 'sha256' not in upload_columns:
             self._conn.execute('ALTER TABLE uploads ADD COLUMN sha256 TEXT')
+        if 'cleanup_paths' not in upload_columns:
+            self._conn.execute('ALTER TABLE uploads ADD COLUMN cleanup_paths TEXT')
 
         for row in self._conn.execute(
             'SELECT id FROM flights WHERE flight_uuid IS NULL OR flight_uuid=""'
@@ -203,8 +207,12 @@ class Store:
             claimed['attempts'] = row['attempts'] + 1
             return claimed
 
-    def mark_collected(self, flight_id, zip_path, size):
-        """Mark a flight collected and enqueue its zip for upload atomically."""
+    def mark_collected(self, flight_id, zip_path, size, cleanup_paths=None):
+        """Mark a flight collected and enqueue its zip for upload atomically.
+
+        ``cleanup_paths`` are original-location files/dirs (e.g. the raw
+        mcap_logs recording) to remove once this upload is confirmed done.
+        """
         now = time.time()
         with self._lock:
             flight = self._conn.execute(
@@ -220,10 +228,11 @@ class Store:
             self._conn.execute(
                 'INSERT INTO uploads '
                 '(flight_id, flight_uuid, zip_path, size, sha256, status, '
-                'created_at, updated_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?)',
+                'created_at, updated_at, cleanup_paths) '
+                'VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)',
                 (
                     flight_id, flight['flight_uuid'], zip_path, size, checksum,
-                    PENDING_UPLOAD, now, now,
+                    PENDING_UPLOAD, now, now, json.dumps(list(cleanup_paths or [])),
                 ),
             )
             self._conn.commit()
