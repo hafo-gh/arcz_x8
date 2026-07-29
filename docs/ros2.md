@@ -30,8 +30,8 @@ arcz
 | --- | --- | --- |
 | `/arcz/vehicle/is_armed` | `arcz_connection/mavlink_bridge_node` `(std_msgs/msg/Bool)` | From `HEARTBEAT.base_mode` & `MAV_MODE_FLAG_SAFETY_ARMED`; more mappings can be added without code changes; transient-local reliable QoS |
 | `/arcz/vehicle/is_online` | `arcz_connection/internet_connection_node` `(std_msgs/msg/Bool)` | TCP-connect probe against fixed public IPs, online if any target succeeds; published every 5s (configurable); transient-local reliable QoS |  |
-| `/arcz/vehicle/postflight_dump/collecting` | `arcz_postflight/queue_status_node` `(std_msgs/msg/UInt16)` | 1 Hz, active collection-queue depth |  |
-| `/arcz/vehicle/postflight_dump/uploading` | `arcz_postflight/queue_status_node` `(std_msgs/msg/UInt16)` | 1 Hz, active upload-queue depth |  |
+| `/arcz/postflight/collecting` | `arcz_postflight/queue_status_node` `(std_msgs/msg/UInt16)` | 1 Hz, active collection-queue depth |  |
+| `/arcz/postflight/uploading` | `arcz_postflight/queue_status_node` `(std_msgs/msg/UInt16)` | 1 Hz, active upload-queue depth |  |
 | `/arcz/location/global/fix` | `arcz_connection/mavlink_bridge_node` `(sensor_msgs/msg/NavSatFix)` | Mirrors MAVLink `GPS_RAW_INT` (raw GPS fix, not the fused `GLOBAL_POSITION_INT` estimate); `fix_type` mapped to `NavSatStatus`; position covariance not populated (`COVARIANCE_TYPE_UNKNOWN`); sensor-data QoS (best-effort, volatile) |  |
 
 `mcap_recorder_node` does not publish any topics (it only subscribes to `/arcz/vehicle/is_armed`).

@@ -10,8 +10,8 @@ from arcz_postflight.postflight_dump import store as st
 from arcz_postflight.postflight_dump.config import Config
 
 
-COLLECTING_TOPIC = '/arcz/vehicle/postflight_dump/collecting'
-UPLOADING_TOPIC = '/arcz/vehicle/postflight_dump/uploading'
+COLLECTING_TOPIC = '/arcz/postflight/collecting'
+UPLOADING_TOPIC = '/arcz/postflight/uploading'
 PUBLISH_PERIOD_S = 1.0
 UINT16_MAX = (1 << 16) - 1
 

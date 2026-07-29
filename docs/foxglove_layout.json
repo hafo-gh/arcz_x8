@@ -53,7 +53,7 @@
     "Plot!3hkal4h": {
       "paths": [
         {
-          "value": "/arcz/vehicle/postflight_dump/collecting.data",
+          "value": "/arcz/postflight/collecting.data",
           "enabled": true,
           "timestampMethod": "receiveTime",
           "color": "#f54c4c",
@@ -62,7 +62,7 @@
           "lineSize": 3
         },
         {
-          "value": "/arcz/vehicle/postflight_dump/uploading.data",
+          "value": "/arcz/postflight/uploading.data",
           "enabled": true,
           "timestampMethod": "receiveTime",
           "color": "#4300ff",
@@ -73,7 +73,7 @@
       ],
       "minYValue": 0,
       "maxYValue": 3,
-      "foxglovePanelTitle": "/vehicle/postflight_dump",
+      "foxglovePanelTitle": "/postflight",
       "showPlotValuesInLegend": true
     }
   },
