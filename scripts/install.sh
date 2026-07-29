@@ -77,12 +77,6 @@ cat <<EOF
   src/arcz_postflight/.env  (copy from .env.example, chmod 600)
       MALP_UPLOAD_TOKEN       - per-drone bearer token from mrblack
 
-  src/arcz_vision/config/zr10_mediamtx.yml
-      paths.camera.source     - the ZR-10's RTSP stream address
-      webrtcAdditionalHosts   - this vehicle's actual Tailscale IP(s)
-  src/arcz_vision/launch/vision.launch.py
-      bind_tailscale default  - this vehicle's Tailscale IP
-
 After editing any of the above, re-run this script (or just
 "docker compose up -d --build" from the repo root) to apply changes.
 EOF

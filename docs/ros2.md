@@ -11,7 +11,6 @@ arcz
 | `arcz_connection` | Connectivity: MAVLink split/bridge to the flight controller, Zenoh DDS router, internet connectivity monitoring |
 | `arcz_observability` | Observability: MCAP recording of all ROS topics while armed, Foxglove bridge for live introspection |
 | `arcz_postflight` | Post-flight data collection (PX4 ULog) and resumable upload to a remote server |
-| `arcz_vision` | SIYI ZR-10 gimbal camera bridge: WebRTC video stream + control web UI |
 
 ## Nodes / processes
 
@@ -24,7 +23,6 @@ arcz
 | `arcz_observability` | `mcap_recorder` | rclpy node | Records every ROS topic to MCAP while the vehicle is armed |
 | `arcz_observability` | `foxglove_bridge` | external process | Foxglove Studio websocket bridge (port 8765) |
 | `arcz_postflight` | `postflight_dump` (`collector_node`, `uploader_node`, `queue_status_node`) | 3 rclpy nodes | Share a durable SQLite queue: collects the PX4 ULog per qualifying flight, uploads the resulting zip via resumable tus, publishes queue depth |
-| `arcz_vision` | `zr10_bridge` (`zr10_gateway`, `zr10_healthcheck`, MediaMTX) | rclpy-free processes | SIYI ZR-10 gimbal control + WebRTC video web UI |
 
 ## Topics currently published
 
@@ -37,6 +35,8 @@ arcz
 | `/arcz/vehicle/postflight_dump/uploading` | `std_msgs/msg/UInt16` | `arcz_postflight` / `queue_status_node` | 1 Hz, active upload-queue depth |
 
 `mcap_recorder` does not publish any topics (it only subscribes to `/arcz/vehicle/is_armed`).
+
+The `arcz_vision` package (SIYI ZR-10 gimbal control + WebRTC video web UI) has been removed for now; its code is preserved on the `with_siyizr10` branch.
 
 ## Deployment model
 
