@@ -16,3 +16,5 @@ services:
       PYTHONUNBUFFERED: "1"
     volumes:
       - ${MCAP_LOGS_DIR:-./mcap_logs}:/mcap_logs
+      # See arcz_connection's docker-compose.yml for why this is needed.
+      - /etc/resolv.conf:/etc/resolv.conf:ro

@@ -17,3 +17,9 @@ services:
       MALP_UPLOAD_TOKEN: ${MALP_UPLOAD_TOKEN:?Set MALP_UPLOAD_TOKEN in .env}
     volumes:
       - ${POSTFLIGHT_DATA_DIR:-./data}:/data
+      # Docker generates its own resolv.conf even under host networking,
+      # replacing the host's systemd-resolved stub (127.0.0.53, which
+      # understands Tailscale MagicDNS names like 'mrblack') with public
+      # fallbacks that don't. Bind-mount the real one since networking is
+      # already fully shared with the host in this mode.
+      - /etc/resolv.conf:/etc/resolv.conf:ro

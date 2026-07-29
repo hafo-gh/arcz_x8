@@ -18,6 +18,13 @@ services:
     # root .env to match this vehicle -- no need to edit launch/*.py.
     devices:
       - ${PX4_SERIAL_DEVICE:-/dev/ttyACM0}:${PX4_SERIAL_DEVICE:-/dev/ttyACM0}
+    # Docker generates its own resolv.conf even under host networking,
+    # replacing the host's systemd-resolved stub (127.0.0.53, which
+    # understands Tailscale MagicDNS names) with public fallbacks that
+    # don't. Bind-mount the real one since networking is already fully
+    # shared with the host in this mode.
+    volumes:
+      - /etc/resolv.conf:/etc/resolv.conf:ro
     command:
       - ros2
       - launch
