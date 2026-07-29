@@ -14,6 +14,14 @@ services:
       RMW_IMPLEMENTATION: rmw_zenoh_cpp
       ZENOH_SESSION_CONFIG_URI: /opt/ros/${ROS_DISTRO:-jazzy}/share/rmw_zenoh_cpp/config/DEFAULT_RMW_ZENOH_SESSION_CONFIG.json5
       PYTHONUNBUFFERED: "1"
-    # The FC serial link. Adjust to match the actual device on this vehicle.
+    # The FC serial link. Adjust PX4_SERIAL_DEVICE/PX4_SERIAL_BAUD in the
+    # root .env to match this vehicle -- no need to edit launch/*.py.
     devices:
       - ${PX4_SERIAL_DEVICE:-/dev/ttyACM0}:${PX4_SERIAL_DEVICE:-/dev/ttyACM0}
+    command:
+      - ros2
+      - launch
+      - arcz_connection
+      - connection.launch.py
+      - serial_device:=${PX4_SERIAL_DEVICE:-/dev/ttyACM0}
+      - serial_baud:=${PX4_SERIAL_BAUD:-921600}

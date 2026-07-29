@@ -10,11 +10,27 @@
 set -euo pipefail
 
 REPO_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
-ROS_DISTRO="${ROS_DISTRO:-jazzy}"
 
 if [[ ${EUID} -ne 0 ]]; then
-  exec sudo ROS_DISTRO="$ROS_DISTRO" "$0" "$@"
+  exec sudo "$0" "$@"
 fi
+
+echo "==> Ensuring .env exists"
+if [ ! -f "$REPO_ROOT/.env" ]; then
+  cp "$REPO_ROOT/.env.example" "$REPO_ROOT/.env"
+  chmod 600 "$REPO_ROOT/.env"
+  echo "    created .env from .env.example -- edit it for this vehicle, see the note at the end"
+else
+  echo "    .env already exists, leaving it as-is"
+fi
+
+# Loaded into this script's own environment too (not just docker compose's),
+# so e.g. the base-image build below uses the same ROS_DISTRO as .env sets.
+set -a
+# shellcheck disable=SC1091
+source "$REPO_ROOT/.env"
+set +a
+ROS_DISTRO="${ROS_DISTRO:-jazzy}"
 
 echo "==> Removing obsolete legacy systemd services (mavsplit/siyi)"
 for pattern in '*mavsplit*' '*siyi*'; do
@@ -60,23 +76,17 @@ echo "==> Bringing the stack up"
 
 cat <<EOF
 
-==> Done. Configuration you will likely need to review before first flight:
+==> Done. Per-vehicle configuration lives in two places:
 
-  src/arcz_connection/docker-compose.yml
-      PX4_SERIAL_DEVICE   - the FC's serial device node (default /dev/ttyACM0)
-      ROS_DOMAIN_ID       - must match across all vehicle containers
-
-  src/arcz_connection/launch/connection.launch.py
-      serial_device / serial_baud / qgc_out_uri / pth_out_uri launch args
-      (defaults live in this file; override via docker-compose.yml command
-      overrides, or edit the defaults directly)
+  .env (repo root, copied from .env.example above if it didn't exist yet)
+      ROS_DISTRO, ROS_DOMAIN_ID, PX4_SERIAL_DEVICE, PX4_SERIAL_BAUD,
+      MALP_UPLOAD_TOKEN -- picked up by every container automatically,
+      no need to edit any launch/*.py file.
 
   src/arcz_postflight/config/postflight_dump.yaml
-      vehicle_id              - this vehicle's UUID in the mrblack database
+      vehicle_id                          - this vehicle's UUID in the mrblack database
       upload.endpoint / upload.probe_host - the mrblack server address
-  src/arcz_postflight/.env  (copy from .env.example, chmod 600)
-      MALP_UPLOAD_TOKEN       - per-drone bearer token from mrblack
 
-After editing any of the above, re-run this script (or just
+After editing .env, re-run this script (or just
 "docker compose up -d --build" from the repo root) to apply changes.
 EOF
