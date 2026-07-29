@@ -26,13 +26,6 @@ def generate_launch_description():
         output='screen',
     )
 
-    foxglove_bridge = ExecuteProcess(
-        cmd=['ros2', 'launch', 'foxglove_bridge', 'foxglove_bridge_launch.xml', 'port:=8765'],
-        respawn=True,
-        respawn_delay=1.0,
-        output='screen',
-    )
-
     # mavsplit = MAVProxy fanning the FC serial link out to a UDP port for
     # QGroundControl and a UDP port for mavlink_bridge. MAVProxy connects
     # OUT to pth_out_uri, so mavlink_bridge must be listening there.
@@ -74,7 +67,6 @@ def generate_launch_description():
         DeclareLaunchArgument('qgc_out_uri', default_value='udpin:0.0.0.0:14551'),
         DeclareLaunchArgument('pth_out_uri', default_value='udpout:127.0.0.1:14552'),
         zenoh_router,
-        foxglove_bridge,
         mavsplit,
         mavlink_bridge_node,
         internet_connection_node,

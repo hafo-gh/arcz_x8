@@ -7,7 +7,7 @@ WORKDIR /ros2_ws/src/arcz_connection
 COPY . .
 
 # MAVProxy is not a rosdep/apt package; the rest (rmw_zenoh_cpp,
-# foxglove_bridge, pymavlink, PyYAML) resolves straight from package.xml.
+# pymavlink, PyYAML) resolves straight from package.xml.
 RUN apt-get update \
     && rosdep install --from-paths . --ignore-src -r -y \
     && rm -rf /var/lib/apt/lists/*
