@@ -24,9 +24,9 @@ if [ ! -f "$REPO_ROOT/.env" ]; then
 
 The .env.example was copied to .env.
 
-Now please edit $REPO_ROOT/.env, update your configuration.
+Now please go ahead and put your configuration into  $REPO_ROOT/.env
 
-After that, come back and run this script agin.
+When you are done, come back and run this script agin.
 
 EOF
   exit 0
