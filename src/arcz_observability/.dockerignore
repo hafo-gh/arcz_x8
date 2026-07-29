@@ -1,0 +1,7 @@
+__pycache__/
+*.pyc
+build/
+install/
+log/
+test/
+mcap_logs/

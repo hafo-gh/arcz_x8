@@ -1,0 +1,18 @@
+name: arcz-observability
+
+services:
+  arcz_observability:
+    build:
+      context: .
+      args:
+        ROS_DISTRO: ${ROS_DISTRO:-jazzy}
+    image: ${ARCZ_OBSERVABILITY_IMAGE:-arcz/arcz_observability:latest}
+    restart: unless-stopped
+    network_mode: host
+    environment:
+      ROS_DOMAIN_ID: ${ROS_DOMAIN_ID:-0}
+      RMW_IMPLEMENTATION: rmw_zenoh_cpp
+      ZENOH_SESSION_CONFIG_URI: /opt/ros/${ROS_DISTRO:-jazzy}/share/rmw_zenoh_cpp/config/DEFAULT_RMW_ZENOH_SESSION_CONFIG.json5
+      PYTHONUNBUFFERED: "1"
+    volumes:
+      - ${MCAP_LOGS_DIR:-./mcap_logs}:/mcap_logs
