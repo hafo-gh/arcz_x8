@@ -92,4 +92,7 @@ echo "==> Bringing the stack up"
 (cd "$REPO_ROOT" && docker compose up -d --build)
 
 echo
-echo "All good now. Diky, ze v tom litas s nami!"
+echo "Done."
+echo
+echo "Díky, že v tom lítáš s námi!"
+echo
