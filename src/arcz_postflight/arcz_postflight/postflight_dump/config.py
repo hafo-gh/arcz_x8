@@ -2,6 +2,9 @@
 
 Loads ``postflight_dump.yaml`` (installed into the package share directory, or
 an explicit path) and exposes it via dotted-key lookups with sane defaults.
+Per-vehicle values (vehicle_id, the mrblack server address) live in the root
+``.env`` instead of this file, so the same YAML ships unchanged to every
+vehicle -- see ``_apply_env_overrides``.
 """
 import copy
 import os
@@ -83,6 +86,22 @@ class Config:
         with open(self.path, 'r') as handle:
             loaded = yaml.safe_load(handle) or {}
         self._data = _deep_merge(DEFAULTS, loaded)
+        self._apply_env_overrides()
+
+    def _apply_env_overrides(self):
+        """Per-vehicle values that live in the root .env, not the tracked YAML."""
+        vehicle_id = os.environ.get('VEHICLE_ID')
+        if vehicle_id:
+            self._data['vehicle_id'] = vehicle_id
+
+        mrblack_host = os.environ.get('MRBLACK_HOST')
+        if mrblack_host:
+            self._data['upload']['endpoint'] = (
+                'http://%s/api/flight-uploads' % mrblack_host)
+            # Let the existing endpoint_host_port() fallback in uploader_node
+            # derive probe_host/probe_port from the endpoint above.
+            self._data['upload']['probe_host'] = None
+            self._data['upload']['probe_port'] = None
 
     def get(self, dotted_key, default=None):
         """Look up ``a.b.c`` style keys, returning ``default`` if missing."""

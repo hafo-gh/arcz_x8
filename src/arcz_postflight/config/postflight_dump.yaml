@@ -1,12 +1,15 @@
 # ==========================================================================
 # arcz_postflight / postflight_dump configuration
 # --------------------------------------------------------------------------
+# This file is the same for every vehicle -- per-vehicle values (vehicle_id,
+# the mrblack server address, the upload token) live in the root .env
+# instead, so this file never needs editing for a new vehicle. See
+# config.py's _apply_env_overrides for how VEHICLE_ID/MRBLACK_HOST override
+# upload.endpoint/probe_host below.
+#
 # All state lives under `data_root` and survives reboots/power loss, so make
 # sure it points at persistent storage (an SD card / eMMC path), not tmpfs.
 # ==========================================================================
-
-# Stable identity of this physical drone in the mrblack vehicle database.
-vehicle_id: 53fb336f-970e-4629-900f-71c82498d30a
 
 # A "flight" only counts (and only then is its data collected) if the drone
 # stayed armed at least this many seconds.
@@ -82,8 +85,10 @@ collection:
 # Upload to server (server is developed separately)
 # --------------------------------------------------------------------------
 upload:
-  # Base endpoint of the resumable-upload server.
-  endpoint: http://mrblack:8000/api/flight-uploads
+  # Base endpoint of the resumable-upload server. Overridden at runtime by
+  # MRBLACK_HOST from .env (see config.py); this default only applies if
+  # that env var is unset.
+  endpoint: https://example.com/uploads
 
   # Transfer protocol:
   #   tus        -> tus.io resumable protocol (RECOMMENDED, interruptible)
@@ -107,9 +112,10 @@ upload:
   backoff_max_s: 300.0
 
   # Connectivity probe (TCP connect) used to decide "are we online?".
-  # If probe_host is null, the endpoint's host and port 443 are used.
-  probe_host: mrblack
-  probe_port: 8000
+  # Null here means "derive from the endpoint above" -- also overridden by
+  # MRBLACK_HOST when that's set.
+  probe_host: null
+  probe_port: null
   probe_timeout_s: 3.0
 
   # Delete the local zip after a confirmed successful upload?

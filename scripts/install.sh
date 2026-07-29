@@ -1,8 +1,10 @@
 #!/usr/bin/env bash
 # Fresh-host bootstrap. Run after checking out this repo and installing
-# Docker. Cleans up obsolete legacy services/containers from before this
-# repo existed, checks dependencies, then brings the whole stack up with
-# plain `docker compose up -d --build`. Docker's own `restart:
+# Docker, on a clean host (no leftover containers/services from a prior
+# setup -- that's on the operator, not this script). Cleans up obsolete
+# legacy systemd services from before this repo existed, checks
+# dependencies, then brings the whole stack up with plain `docker compose
+# up -d --build`. Docker's own `restart:
 # unless-stopped` policy (plus `docker.service` being enabled at boot,
 # which any Docker install already does) is what survives a reboot or a
 # crashed container -- systemd is not used to wrap/supervise containers
@@ -15,13 +17,16 @@ if [[ ${EUID} -ne 0 ]]; then
   exec sudo "$0" "$@"
 fi
 
-echo "==> Ensuring .env exists"
 if [ ! -f "$REPO_ROOT/.env" ]; then
   cp "$REPO_ROOT/.env.example" "$REPO_ROOT/.env"
   chmod 600 "$REPO_ROOT/.env"
-  echo "    created .env from .env.example -- edit it for this vehicle, see the note at the end"
-else
-  echo "    .env already exists, leaving it as-is"
+  cat <<EOF
+The .env.example was copied to .env.
+Now please edit $REPO_ROOT/.env, update your configuration (vehicle_id,
+mrblack server address, FC serial device, upload token, ...), and rerun
+this script.
+EOF
+  exit 0
 fi
 
 # Loaded into this script's own environment too (not just docker compose's),
@@ -56,11 +61,17 @@ if ! docker compose version >/dev/null 2>&1; then
   exit 1
 fi
 
-echo "==> Stopping stray containers (arcz_/ai_/malp_ prefixed)"
-mapfile -t stray_containers < <(docker ps -a --format '{{.Names}}' | grep -E '^(arcz_|ai_|malp_)' || true)
-if [ "${#stray_containers[@]}" -gt 0 ]; then
-  echo "    stopping: ${stray_containers[*]}"
-  docker stop "${stray_containers[@]}"
+echo "==> Ensuring the invoking user can run docker without sudo"
+if [ -n "${SUDO_USER:-}" ] && [ "$SUDO_USER" != "root" ]; then
+  if id -nG "$SUDO_USER" 2>/dev/null | grep -qw docker; then
+    echo "    $SUDO_USER is already in the docker group"
+  else
+    usermod -aG docker "$SUDO_USER"
+    echo "    added $SUDO_USER to the docker group -- log out and back in" \
+         "(or run 'newgrp docker') for this to take effect without sudo"
+  fi
+else
+  echo "    skipped (no invoking sudo user detected)"
 fi
 
 echo "==> Ensuring the Docker daemon itself starts on boot (a real system task)"
@@ -74,19 +85,5 @@ docker build -t "arcz/ros2-base:${ROS_DISTRO}" \
 echo "==> Bringing the stack up"
 (cd "$REPO_ROOT" && docker compose up -d --build)
 
-cat <<EOF
-
-==> Done. Per-vehicle configuration lives in two places:
-
-  .env (repo root, copied from .env.example above if it didn't exist yet)
-      ROS_DISTRO, ROS_DOMAIN_ID, PX4_SERIAL_DEVICE, PX4_SERIAL_BAUD,
-      MALP_UPLOAD_TOKEN -- picked up by every container automatically,
-      no need to edit any launch/*.py file.
-
-  src/arcz_postflight/config/postflight_dump.yaml
-      vehicle_id                          - this vehicle's UUID in the mrblack database
-      upload.endpoint / upload.probe_host - the mrblack server address
-
-After editing .env, re-run this script (or just
-"docker compose up -d --build" from the repo root) to apply changes.
-EOF
+echo
+echo "All good now. Diky, ze v tom litas s nami!"

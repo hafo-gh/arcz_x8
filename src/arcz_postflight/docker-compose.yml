@@ -14,6 +14,8 @@ services:
       RMW_IMPLEMENTATION: rmw_zenoh_cpp
       ZENOH_SESSION_CONFIG_URI: /opt/ros/${ROS_DISTRO:-jazzy}/share/rmw_zenoh_cpp/config/DEFAULT_RMW_ZENOH_SESSION_CONFIG.json5
       PYTHONUNBUFFERED: "1"
+      VEHICLE_ID: ${VEHICLE_ID:?Set VEHICLE_ID in .env}
+      MRBLACK_HOST: ${MRBLACK_HOST:-mrblack:8000}
       MALP_UPLOAD_TOKEN: ${MALP_UPLOAD_TOKEN:?Set MALP_UPLOAD_TOKEN in .env}
     volumes:
       - ${POSTFLIGHT_DATA_DIR:-./data}:/data
