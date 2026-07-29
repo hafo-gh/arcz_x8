@@ -20,6 +20,9 @@ fi
 if [ ! -f "$REPO_ROOT/.env" ]; then
   cp "$REPO_ROOT/.env.example" "$REPO_ROOT/.env"
   chmod 600 "$REPO_ROOT/.env"
+  if [ -n "${SUDO_USER:-}" ] && [ "$SUDO_USER" != "root" ]; then
+    chown "$SUDO_USER":"$(id -gn "$SUDO_USER")" "$REPO_ROOT/.env"
+  fi
   cat <<EOF
 
 The .env.example was copied to .env.
