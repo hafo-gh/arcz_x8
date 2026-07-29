@@ -1,0 +1,104 @@
+{
+  "configById": {
+    "map!4325ufq": {
+      "zoomLevel": 15
+    },
+    "RosOut!2ysozpl": {
+      "minLogLevel": 1,
+      "preload": true,
+      "searchTerms": [],
+      "nameFilter": {},
+      "fontSize": 12,
+      "showLevel": true,
+      "showDate": true,
+      "showTime": true,
+      "showTimezone": true,
+      "showName": true,
+      "showSourceLocation": false
+    },
+    "Plot!2y7un0x": {
+      "paths": [
+        {
+          "timestampMethod": "receiveTime",
+          "value": "/arcz/vehicle/is_online.data",
+          "enabled": true,
+          "color": "#00a429",
+          "id": "8e85b8e1-0d23-4767-b8e0-45cf562954a6",
+          "showLine": false,
+          "lineSize": 6.6
+        }
+      ],
+      "showYAxisLabels": false,
+      "showYAxisGridLines": false,
+      "isSynced": true,
+      "foxglovePanelTitle": "/vehicle/is_online",
+      "showLegend": false
+    },
+    "Plot!4d7m5p0": {
+      "paths": [
+        {
+          "value": "/arcz/vehicle/is_armed.data",
+          "enabled": true,
+          "timestampMethod": "receiveTime",
+          "color": "#4e98e2",
+          "id": "c006bf87-e9f2-421d-8520-e5b330fcf767",
+          "lineSize": 3
+        }
+      ],
+      "minYValue": 0,
+      "maxYValue": 2,
+      "foxglovePanelTitle": "/vehicle/is_armed",
+      "showLegend": false
+    },
+    "Plot!3hkal4h": {
+      "paths": [
+        {
+          "value": "/arcz/vehicle/postflight_dump/collecting.data",
+          "enabled": true,
+          "timestampMethod": "receiveTime",
+          "color": "#f54c4c",
+          "id": "79f15037-0092-4400-a9b8-99ba7531506e",
+          "label": "collecting",
+          "lineSize": 3
+        },
+        {
+          "value": "/arcz/vehicle/postflight_dump/uploading.data",
+          "enabled": true,
+          "timestampMethod": "receiveTime",
+          "color": "#4300ff",
+          "id": "066f4dd0-4282-403f-bb9a-94ffdc4089b6",
+          "label": "uploading",
+          "lineSize": 3
+        }
+      ],
+      "minYValue": 0,
+      "maxYValue": 3,
+      "foxglovePanelTitle": "/vehicle/postflight_dump",
+      "showPlotValuesInLegend": true
+    }
+  },
+  "globalVariables": {},
+  "userNodes": {},
+  "playbackConfig": {
+    "speed": 1
+  },
+  "layout": {
+    "direction": "row",
+    "first": {
+      "first": "map!4325ufq",
+      "second": "RosOut!2ysozpl",
+      "direction": "column",
+      "splitPercentage": 48.75925027469768
+    },
+    "second": {
+      "first": {
+        "first": "Plot!2y7un0x",
+        "second": "Plot!4d7m5p0",
+        "direction": "column"
+      },
+      "second": "Plot!3hkal4h",
+      "direction": "column"
+    },
+    "splitPercentage": 61.249084226615544
+  }
+}
