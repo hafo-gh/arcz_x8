@@ -4,9 +4,20 @@ import os
 import yaml
 import rclpy
 from rclpy.node import Node
+from rclpy.qos import DurabilityPolicy, HistoryPolicy, QoSProfile, ReliabilityPolicy
 from std_msgs.msg import Bool
 from pymavlink import mavutil
 from ament_index_python.packages import get_package_share_directory
+
+# Transient-local + reliable so a subscriber started after us (e.g. another
+# container) still gets the latest value immediately instead of waiting for
+# the next mavlink message.
+TOPIC_QOS = QoSProfile(
+    history=HistoryPolicy.KEEP_LAST,
+    depth=1,
+    reliability=ReliabilityPolicy.RELIABLE,
+    durability=DurabilityPolicy.TRANSIENT_LOCAL,
+)
 
 DEFAULT_MAPPINGS = [
     {
@@ -49,7 +60,7 @@ class MavlinkBridgeNode(Node):
                 bitmask = getattr(mavutil.mavlink, bitmask)
             mapping = {**mapping, 'bitmask': bitmask}
 
-            publisher = self.create_publisher(Bool, mapping['topic'], 10)
+            publisher = self.create_publisher(Bool, mapping['topic'], TOPIC_QOS)
             self._topic_entries.setdefault(mapping['mavlink_msg'], []).append(
                 (publisher, mapping))
             self.get_logger().info(
