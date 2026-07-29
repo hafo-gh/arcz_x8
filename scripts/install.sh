@@ -21,10 +21,13 @@ if [ ! -f "$REPO_ROOT/.env" ]; then
   cp "$REPO_ROOT/.env.example" "$REPO_ROOT/.env"
   chmod 600 "$REPO_ROOT/.env"
   cat <<EOF
+
 The .env.example was copied to .env.
-Now please edit $REPO_ROOT/.env, update your configuration (vehicle_id,
-mrblack server address, FC serial device, upload token, ...), and rerun
-this script.
+
+Now please edit $REPO_ROOT/.env, update your configuration.
+
+After that, come back and run this script agin.
+
 EOF
   exit 0
 fi
