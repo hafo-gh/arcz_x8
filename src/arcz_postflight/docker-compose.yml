@@ -1,0 +1,19 @@
+name: arcz-postflight
+
+services:
+  arcz_postflight:
+    build:
+      context: .
+      args:
+        ROS_DISTRO: ${ROS_DISTRO:-jazzy}
+    image: ${ARCZ_POSTFLIGHT_IMAGE:-arcz/arcz_postflight:latest}
+    restart: unless-stopped
+    network_mode: host
+    environment:
+      ROS_DOMAIN_ID: ${ROS_DOMAIN_ID:-0}
+      RMW_IMPLEMENTATION: rmw_zenoh_cpp
+      ZENOH_SESSION_CONFIG_URI: /opt/ros/${ROS_DISTRO:-jazzy}/share/rmw_zenoh_cpp/config/DEFAULT_RMW_ZENOH_SESSION_CONFIG.json5
+      PYTHONUNBUFFERED: "1"
+      MALP_UPLOAD_TOKEN: ${MALP_UPLOAD_TOKEN:?Set MALP_UPLOAD_TOKEN in .env}
+    volumes:
+      - ${POSTFLIGHT_DATA_DIR:-./data}:/data

@@ -1,0 +1,104 @@
+# ==========================================================================
+# arcz_postflight / postflight_dump configuration
+# --------------------------------------------------------------------------
+# All state lives under `data_root` and survives reboots/power loss, so make
+# sure it points at persistent storage (an SD card / eMMC path), not tmpfs.
+# ==========================================================================
+
+# Stable identity of this physical drone in the mrblack vehicle database.
+vehicle_id: 53fb336f-970e-4629-900f-71c82498d30a
+
+# A "flight" only counts (and only then is its data collected) if the drone
+# stayed armed at least this many seconds.
+flight_if_armed_for_s: 5.0
+
+# ROS topic carrying the armed state. std_msgs/Bool, data=true when armed.
+# Published by arcz_connection's mavlink_bridge.
+armed_topic: /arcz/vehicle/is_armed
+
+# Root directory for all persistent state: SQLite queue DB, working files,
+# and the pending-upload zips.
+data_root: /data
+
+# --------------------------------------------------------------------------
+# Flight-data collection
+# --------------------------------------------------------------------------
+collection:
+  # How often (s) the collection worker wakes to look for pending flights.
+  # (It also wakes immediately when a new flight is enqueued.)
+  poll_interval_s: 5.0
+
+  # Max collection attempts before a flight is marked collection_failed.
+  max_attempts: 10
+
+  # Let PX4 close the ULog after disarm, then retry transient collection
+  # failures with exponential backoff.
+  initial_delay_s: 5.0
+  backoff_min_s: 10.0
+  backoff_max_s: 300.0
+
+  # What to gather for each flight. Processed in order; every produced file
+  # is placed in that flight's zip. This list is where "what is flight data"
+  # gets defined later -- add/adjust sources without touching code.
+  sources:
+    # -------------------------------------------------------------------
+    # PX4 flight-controller ULog (.ulg) -- the mandatory source.
+    # Downloaded over MAVLink FTP right after the flight.
+    # -------------------------------------------------------------------
+    - type: px4_ulog
+      output_name: fc                 # produces fc.ulg in the archive
+
+      # How the companion computer reaches the flight controller:
+      #   serial -> USB or UART      udp/tcp -> over LAN/ethernet
+      # Default rides on arcz_connection's MAVProxy fan-out (its
+      # pth_out_uri), so no separate serial device is needed here.
+      transport: udp
+      udp_url: udpout:127.0.0.1:14551
+
+      target_system: 0                # 0 = auto-detect from heartbeat
+      target_component: 1             # PX4 autopilot = component 1
+
+      download_protocol: mavftp       # reliable through the MAVProxy UDP route
+      match_tolerance_s: 120          # reject unrelated older/newer logs
+      heartbeat_timeout_s: 15
+      download_timeout_s: 600
+
+# --------------------------------------------------------------------------
+# Upload to server (server is developed separately)
+# --------------------------------------------------------------------------
+upload:
+  # Base endpoint of the resumable-upload server.
+  endpoint: http://mrblack:8000/api/flight-uploads
+
+  # Transfer protocol:
+  #   tus        -> tus.io resumable protocol (RECOMMENDED, interruptible)
+  #   put_range  -> simple Content-Range PUT fallback
+  protocol: tus
+
+  # Bytes per PATCH/chunk. Smaller = finer resume granularity, more overhead.
+  # Keep individual HTTP requests deliberately small.  The drone commonly
+  # reaches mrblack over a cellular Tailscale path; small chunks commit useful
+  # progress even when that path drops or reorders packets.
+  chunk_size: 65536     # 64 KiB
+
+  # How often (s) the upload worker wakes to look for pending zips / retries.
+  poll_interval_s: 30.0
+
+  # Max upload attempts per file before it is parked as upload_failed.
+  max_attempts: 100
+
+  # Exponential backoff bounds (s) between failed attempts.
+  backoff_min_s: 5.0
+  backoff_max_s: 300.0
+
+  # Connectivity probe (TCP connect) used to decide "are we online?".
+  # If probe_host is null, the endpoint's host and port 443 are used.
+  probe_host: mrblack
+  probe_port: 8000
+  probe_timeout_s: 3.0
+
+  # Delete the local zip after a confirmed successful upload?
+  delete_after_upload: true
+
+  # Bearer token is injected by Compose from its uncommitted .env file.
+  auth_token_env: MALP_UPLOAD_TOKEN

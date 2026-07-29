@@ -1,8 +1,8 @@
-_original_source/
 __pycache__/
 *.pyc
 build/
 install/
 log/
+test/
+data/
 .env
-src/arcz_postflight/data/

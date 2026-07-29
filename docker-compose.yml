@@ -5,3 +5,4 @@ include:
   - src/arcz_connection/docker-compose.yml
   - src/arcz_vision/docker-compose.yml
   - src/arcz_observability/docker-compose.yml
+  - src/arcz_postflight/docker-compose.yml
