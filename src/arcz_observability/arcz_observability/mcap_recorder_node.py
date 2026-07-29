@@ -26,7 +26,7 @@ class McapRecorderNode(Node):
     """Record every ROS topic into MCAP only while the vehicle is armed."""
 
     def __init__(self) -> None:
-        super().__init__('mcap_recorder')
+        super().__init__('mcap_recorder_node')
         self.declare_parameter('output_directory', DEFAULT_OUTPUT_DIRECTORY)
         self._output_directory = self.get_parameter('output_directory').value
         self._recorder: Optional[subprocess.Popen] = None

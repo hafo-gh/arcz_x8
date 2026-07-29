@@ -25,7 +25,7 @@ from arcz_postflight.postflight_dump.upload_backends import UploadError, get_bac
 class UploaderNode(Node):
 
     def __init__(self):
-        super().__init__('malp_postflight_uploader')
+        super().__init__('uploader_node')
         self.declare_parameter('config_file', '')
         cfg_path = self.get_parameter('config_file').value or None
         self.config = Config(cfg_path)

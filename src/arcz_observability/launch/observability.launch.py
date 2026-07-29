@@ -7,7 +7,7 @@ def generate_launch_description():
     mcap_recorder_node = Node(
         package='arcz_observability',
         executable='mcap_recorder_node',
-        name='mcap_recorder',
+        name='mcap_recorder_node',
         parameters=[{'output_directory': '/mcap_logs'}],
         respawn=True,
         respawn_delay=1.0,

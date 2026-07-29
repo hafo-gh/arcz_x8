@@ -47,7 +47,7 @@ def _probe(target, timeout_s):
 class InternetConnectionNode(Node):
 
     def __init__(self):
-        super().__init__('internet_connection')
+        super().__init__('internet_connection_node')
         self.declare_parameter('poll_interval_s', 5.0)
         self.declare_parameter('timeout_s', 2.0)
         self.declare_parameter('targets', DEFAULT_TARGETS)

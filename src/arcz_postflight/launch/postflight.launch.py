@@ -11,7 +11,7 @@ def generate_launch_description():
     collector = Node(
         package='arcz_postflight',
         executable='collector_node',
-        name='malp_postflight_collector',
+        name='collector_node',
         parameters=[{'config_file': config_file}],
         respawn=True,
         respawn_delay=1.0,
@@ -20,7 +20,7 @@ def generate_launch_description():
     uploader = Node(
         package='arcz_postflight',
         executable='uploader_node',
-        name='malp_postflight_uploader',
+        name='uploader_node',
         parameters=[{'config_file': config_file}],
         respawn=True,
         respawn_delay=1.0,
@@ -29,7 +29,7 @@ def generate_launch_description():
     queue_status = Node(
         package='arcz_postflight',
         executable='queue_status_node',
-        name='malp_postflight_queue_status',
+        name='queue_status_node',
         parameters=[{'config_file': config_file}],
         respawn=True,
         respawn_delay=1.0,

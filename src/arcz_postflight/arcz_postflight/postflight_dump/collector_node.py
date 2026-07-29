@@ -28,7 +28,7 @@ from arcz_postflight.postflight_dump.config import Config
 class CollectorNode(Node):
 
     def __init__(self):
-        super().__init__('malp_postflight_collector')
+        super().__init__('collector_node')
         self.declare_parameter('config_file', '')
         cfg_path = self.get_parameter('config_file').value or None
         self.config = Config(cfg_path)

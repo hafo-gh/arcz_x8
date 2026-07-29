@@ -19,7 +19,7 @@ UINT16_MAX = (1 << 16) - 1
 class QueueStatusNode(Node):
 
     def __init__(self):
-        super().__init__('malp_postflight_queue_status')
+        super().__init__('queue_status_node')
         self.declare_parameter('config_file', '')
         cfg_path = self.get_parameter('config_file').value or None
         self.config = Config(cfg_path)

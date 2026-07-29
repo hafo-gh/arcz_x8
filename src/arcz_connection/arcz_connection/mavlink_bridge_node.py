@@ -49,7 +49,7 @@ _FIX_TYPE_TO_STATUS = {
 class MavlinkBridgeNode(Node):
 
     def __init__(self):
-        super().__init__('mavlink_bridge')
+        super().__init__('mavlink_bridge_node')
         self.declare_parameter('connection', 'udpin:127.0.0.1:14552')
         self.declare_parameter('mappings_file', '')
 

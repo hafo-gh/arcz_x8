@@ -45,7 +45,7 @@ def generate_launch_description():
     mavlink_bridge_node = Node(
         package='arcz_connection',
         executable='mavlink_bridge_node',
-        name='mavlink_bridge',
+        name='mavlink_bridge_node',
         parameters=[os.path.join(pkg_share, 'config', 'mavlink_bridge.yaml')],
         respawn=True,
         respawn_delay=1.0,
@@ -55,7 +55,7 @@ def generate_launch_description():
     internet_connection_node = Node(
         package='arcz_connection',
         executable='internet_connection_node',
-        name='internet_connection',
+        name='internet_connection_node',
         respawn=True,
         respawn_delay=1.0,
         output='screen',
